@@ -1,5 +1,3 @@
-from sys import platlibdir
-from turtle import window_height
 from pygame import *
 
 width = 700
@@ -42,7 +40,7 @@ class Player(GameSprite):
 
 
 player1 = Player('racket.png', 30, 200, 4, 50, 150)
-player2 = Player('racket.png', 520, 200, 4, 50, 150)
+player2 = Player('racket.png', 600, 200, 4, 50, 150)
 ball = GameSprite('tenis_ball.png', 200, 200, 4, 50, 50)
 
 game = True
@@ -52,35 +50,53 @@ clock = time.Clock()
 speed_x = 3
 speed_y = 3
 
+finish = False
+
+font.init()
+font = font.Font(None, 35)
+lose1 = font.render('Player 1 Lose!', True, (180, 0, 0))
+lose2 = font.render('Player 2 Lose!', True, (180, 0, 0))
+
 while game:
     for e in event.get():
         if e.type == QUIT:
             game = False
     
-    window.fill(background_color)
+    if finish != True:
+        window.fill(background_color)
 
-    player1.reset()
-    player2.reset()
-    ball.reset()
+        player1.reset()
+        player2.reset()
+        ball.reset()
 
-    player1.update_l()
-    player2.update_r()
+        player1.update_l()
+        player2.update_r()
 
-    # bola default bergerak secara diagonal
-    ball.rect.x += speed_x
-    ball.rect.y += speed_y
+        # bola default bergerak secara diagonal
+        ball.rect.x += speed_x
+        ball.rect.y += speed_y
 
-    # ketika bola menyentuh dasar bawah/atas maka dipantulkan
-    if ball.rect.y > height - 50 or ball.rect.y < 0:
-        speed_y *= -1
-    
-    # ketika bolah menyentuh racket maka akan digerakan ke sebaliknya (mantul)
-    if sprite.collide_rect(player1, ball) or sprite.collide_rect(player2, ball):
-        speed_x *= -1
-        speed_y *= -1
+        # ketika bola menyentuh dasar bawah/atas maka dipantulkan
+        if ball.rect.y > height - 50 or ball.rect.y < 0:
+            speed_y *= -1
+        
+        # ketika bolah menyentuh racket maka akan digerakan ke sebaliknya (mantul)
+        if sprite.collide_rect(player1, ball) or sprite.collide_rect(player2, ball):
+            speed_x *= -1
+            speed_y *= -1
+        
+        # kekalahan player 1
+        if ball.rect.x < 0:
+            finish = True
+            window.blit(lose1, (200, 200))
 
-    
-    display.update()
+        # kekalahan player 2
+        if ball.rect.x > width:
+            finish = True
+            window.blit(lose2, (200, 200))
+
+        
+        display.update()
     clock.tick(FPS)
     
 
